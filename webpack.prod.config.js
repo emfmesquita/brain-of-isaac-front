@@ -1,4 +1,5 @@
 const CopyPlugin = require("copy-webpack-plugin");
+const path = require("path");
 
 module.exports = {
   entry: "./src/index.js",
@@ -6,7 +7,10 @@ module.exports = {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
+        include: [
+          path.resolve(__dirname, "src"),
+          path.resolve(__dirname, "node_modules/brain-of-isaac-commons")
+        ],
         use: {
           loader: "babel-loader",
           options: {
@@ -20,11 +24,17 @@ module.exports = {
       },
       {
         test: /\.(png|jpe?g|gif)$/,
-        use: ['file-loader']
+        use: [{
+          loader: 'file-loader',
+          options: {
+            outputPath: 'images',
+            publicPath: 'images',
+          },
+        }]
       }
     ]
   },
-  devtool: "cheap-module-eval-source-map",
+  node: false,
   resolve: {
     extensions: ["*", ".js", ".jsx"]
   },
@@ -38,8 +48,5 @@ module.exports = {
       { from: "public", to: "." },
       { from: "node_modules/brain-of-isaac-commons/public", to: "." }
     ]),
-  ],
-  devServer: {
-    contentBase: "./dist"
-  }
+  ]
 };

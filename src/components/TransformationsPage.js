@@ -95,6 +95,7 @@ class TransformationsPage extends Component {
   }
 
   render() {
+    if(!this.props.visible) return null;
     const trans = this.props.transformations;
     const pillId = (trans && trans.adulthood && trans.adulthood.pillId) || "0";
     const selected = (trans && trans.selected) || "guppy";
@@ -139,6 +140,7 @@ class TransformationsPage extends Component {
 
 const mapStateToProps = state => {
   return {
+    visible: state.visibility && state.visibility.visible,
     transformations: state.transformations,
     selected: state.transformations && state.transformations.selected,
     pillId:

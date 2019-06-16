@@ -1,11 +1,12 @@
+import C from "brain-of-isaac-commons/constants/transformationConstants";
+import { Provider } from "react-redux";
 import React from "react";
 import ReactDOM from "react-dom";
+import TransformationsPage from "./components/TransformationsPage";
 import { createStore } from "redux";
-import { Provider } from "react-redux";
 import rootReducer from "./reducers/rootReducer";
 import transformationActions from "brain-of-isaac-commons/actions/transformationActions";
-import TransformationsPage from "./components/TransformationsPage";
-import C from "brain-of-isaac-commons/constants/transformationConstants";
+import visibilityActions from "./actions/visibilityActions";
 
 const title = "The Brain of Isaac";
 
@@ -25,7 +26,7 @@ twitch.onAuthorized(function(auth) {
 
   twitch.listen("broadcast", (target, contentType, message) => {
     const transformations = JSON.parse(message).tr;
-    if(!transformations) return;
+    if (!transformations) return;
 
     C.order.forEach((name, idx) => {
       const actionBuilder = transformationActions.updateTransformation[name];
@@ -35,13 +36,20 @@ twitch.onAuthorized(function(auth) {
     });
   });
 
+  twitch.onContext((context, changed) => {
+    if(changed.indexOf("arePlayerControlsVisible") !== -1){
+      const visible = context.arePlayerControlsVisible;
+      store.dispatch(visibilityActions.setVisible(visible));
+    }
+  });
+
   twitch.rig.log("auth");
 });
 
 ReactDOM.render(
   <Provider store={store}>
     <div style={{ height: "100%" }}>
-      <TransformationsPage/>
+      <TransformationsPage />
     </div>
   </Provider>,
   document.getElementById("app")
